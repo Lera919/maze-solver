@@ -157,40 +157,28 @@ namespace Maze
 
         private bool Finish(int i, int j)
         {
-            if (i < this.length - 1)
+            if (i < this.length - 1 && this.IsItFinish(i + 1, j))
             {
-                if (this.IsItFinish(i + 1, j))
-                {
-                    this.SetFinish(i + 1, j);
-                    this.finished = true;
-                }
+                this.SetFinish(i + 1, j);
+                this.finished = true;                
             }
 
-            if (j < this.length - 1)
+            if (j < this.length - 1 && this.IsItFinish(i, j + 1))
             {
-                if (this.IsItFinish(i, j + 1))
-                {
                     this.SetFinish(i, j + 1);
                     this.finished = true;
-                }
             }
 
-            if (i > 0)
+            if (i > 0 && this.IsItFinish(i - 1, j))
             {
-                if (this.IsItFinish(i - 1, j))
-                {
                     this.SetFinish(i - 1, j);
-                    this.finished = true;
-                }
+                    this.finished = true;                
             }
 
-            if (j > 0)
+            if (j > 0 && this.IsItFinish(i, j - 1))
             {
-                if (this.IsItFinish(i, j - 1))
-                {
                     this.SetFinish(i, j - 1);
-                    this.finished = true;
-                }
+                    this.finished = true;                
             }
 
             return this.finished;
@@ -242,36 +230,24 @@ namespace Maze
 
             do
             {
-                if (i < this.length - 1)
+                if (i < this.length - 1 && this.helperMap[i + 1, j] == this.step - 1)
                 {
-                    if (this.helperMap[i + 1, j] == this.step - 1)
-                    {
-                        this.path.Add((++i, j));
-                    }
+                        this.path.Add((++i, j));                    
                 }
 
-                if (j < this.length - 1)
+                if (j < this.length - 1 && this.helperMap[i, j + 1] == this.step - 1)
                 {
-                    if (this.helperMap[i, j + 1] == this.step - 1)
-                    {
-                        this.path.Add((i, ++j));
-                    }
+                    this.path.Add((i, ++j));
                 }
 
-                if (i > 0)
+                if (i > 0 && this.helperMap[i - 1, j] == this.step - 1)
                 {
-                    if (this.helperMap[i - 1, j] == this.step - 1)
-                    {
-                        this.path.Add((--i, j));
-                    }
+                    this.path.Add((--i, j));
                 }
 
-                if (j > 0)
+                if (j > 0 && this.helperMap[i, j - 1] == this.step - 1)
                 {
-                    if (this.helperMap[i, j - 1] == this.step - 1)
-                    {
-                        this.path.Add((i, --j));
-                    }
+                    this.path.Add((i, --j));
                 }
 
                 this.step--;
