@@ -65,12 +65,9 @@ namespace Maze
         /// <exception cref="InvalidOperationException">Thrown if the path does not exist.</exception>
         public void PassMaze()
         {
-            if (this.WavesAlgorithm())
+            if (this.WavesAlgorithm() && this.RestorePath())
             {
-                if (this.RestorePath())
-                {
-                    return;
-                }
+                return;
             }
 
             throw new InvalidOperationException();
@@ -88,15 +85,15 @@ namespace Maze
         public (int row, int column)[] GetPath()
         {
             if (this.path is null)
-            { 
-                throw new InvalidOperationException(); 
+            {
+                throw new InvalidOperationException();
             }
 
             var result = this.path.ToArray();
             Array.Reverse(result);
             return result;
         }
-        
+
         /// <summary>
         /// Gets the pairs (row, column) - indexes of row and columns of exit from maze.
         /// </summary>
@@ -110,11 +107,10 @@ namespace Maze
 
         private int[,] SetHelperMap(bool[,] initialMap)
         {
-            int length = (int)Math.Sqrt(initialMap.Length);
-            int[,] map = new int[length, length];
-            for (int i = 0; i < length; i++)
+            int[,] map = new int[this.length, this.length];
+            for (int i = 0; i < this.length; i++)
             {
-                for (int j = 0; j < length; j++)
+                for (int j = 0; j < this.length; j++)
                 {
                     map[i, j] = initialMap[i, j] ? (int)Way.Wall : (int)Way.Path;
                 }
@@ -124,9 +120,84 @@ namespace Maze
             return map;
         }
 
+        private void MakeWave(int i, int j)
+        {
+            if (i != this.length - 1)
+            {
+                if (this.helperMap[i + 1, j] == (int)Way.Path)
+                {
+                    this.helperMap[i + 1, j] = this.step + 1;
+                }
+            }
+
+            if (j != this.length - 1)
+            {
+                if (this.helperMap[i, j + 1] == (int)Way.Path)
+                {
+                    this.helperMap[i, j + 1] = this.step + 1;
+                }
+            }
+
+            if (i != 0)
+            {
+                if (this.helperMap[i - 1, j] == (int)Way.Path)
+                {
+                    this.helperMap[i - 1, j] = this.step + 1;
+                }
+            }
+
+            if (j != 0)
+            {
+                if (this.helperMap[i, j - 1] == (int)Way.Path)
+                {
+                    this.helperMap[i, j - 1] = this.step + 1;
+                }
+            }
+        }
+
+        private bool Finish(int i, int j)
+        {
+            if (i < this.length - 1)
+            {
+                if (this.IsItFinish(i + 1, j))
+                {
+                    this.SetFinish(i + 1, j);
+                    this.finished = true;
+                }
+            }
+
+            if (j < this.length - 1)
+            {
+                if (this.IsItFinish(i, j + 1))
+                {
+                    this.SetFinish(i, j + 1);
+                    this.finished = true;
+                }
+            }
+
+            if (i > 0)
+            {
+                if (this.IsItFinish(i - 1, j))
+                {
+                    this.SetFinish(i - 1, j);
+                    this.finished = true;
+                }
+            }
+
+            if (j > 0)
+            {
+                if (this.IsItFinish(i, j - 1))
+                {
+                    this.SetFinish(i, j - 1);
+                    this.finished = true;
+                }
+            }
+
+            return this.finished;
+        }
+
         private bool WavesAlgorithm()
         {
-            bool finished = false;
             do
             {
                 for (int i = 0; i < this.length; i++)
@@ -135,93 +206,27 @@ namespace Maze
                     {
                         if (this.helperMap[i, j] == this.step)
                         {
-                            if (i != this.length - 1)
-                            {
-                                if (this.helperMap[i + 1, j] == (int)Way.Path)
-                                {
-                                    this.helperMap[i + 1, j] = this.step + 1;
-                                }
-                            }
+                            this.MakeWave(i, j);
 
-                            if (j != this.length - 1)
-                            {
-                                if (this.helperMap[i, j + 1] == (int)Way.Path)
-                                {
-                                    this.helperMap[i, j + 1] = this.step + 1;
-                                }
-                            }
-
-                            if (i != 0)
-                            {
-                                if (this.helperMap[i - 1, j] == (int)Way.Path)
-                                {
-                                    this.helperMap[i - 1, j] = this.step + 1;
-                                }
-                            }
-
-                            if (j != 0)
-                            {
-                                if (this.helperMap[i, j - 1] == (int)Way.Path)
-                                {
-                                    this.helperMap[i, j - 1] = this.step + 1;
-                                }
-                            }
-
-                            if (i < this.length - 1)
-                            {
-                                if (((i + 1) == this.length - 1 || j == this.length - 1 || (i + 1) == 0 || j == 0)
-                                    && this.helperMap[i + 1, j] == this.step + 1)
-                                {
-                                    this.finishX = i + 1;
-                                    this.finishY = j;
-                                    finished = true;
-                                }
-                            }
-
-                            if (j < this.length - 1)
-                            {
-                                if ((i == this.length - 1 || (j + 1) == this.length - 1 || i == 0 || j + 1 == 0)
-                                   && this.helperMap[i, j + 1] == this.step + 1)
-                                {
-                                    this.finishX = i;
-                                    this.finishY = j + 1;
-                                    finished = true;
-                                }
-                            }
-
-                            if (i > 0)
-                            {
-                                if (((i - 1) == (this.length - 1) || j == (this.length - 1) || (i - 1) == 0 || j == 0)
-                                    && this.helperMap[i - 1, j] == this.step + 1)
-                                {
-                                    this.finishX = i - 1;
-                                    this.finishY = j;
-                                    finished = true;
-                                }
-                            }
-
-                            if (j > 0)
-                            {
-                                if ((i == this.length - 1 || (j - 1) == this.length - 1 || i == 0 || j - 1 == 0)
-                                    && this.helperMap[i, j - 1] == this.step + 1)
-                                {
-                                    this.finishX = i;
-                                    this.finishY = j - 1;
-                                    finished = true;
-                                }
-                            }
+                            this.finished = this.Finish(i, j);
                         }
                     }
                 }
 
                 this.step++;
             }
-            while (!finished && this.step < this.helperMap.Length);
-            this.finished = finished;
-            return finished;
+            while (!this.finished && this.step < this.helperMap.Length);
+            return this.finished;
         }
 
-        private bool IsItFinish(int x, int y) => x == this.length - 1 || y == this.length - 1 || x == 0 || y == 0;
+        private bool IsItFinish(int x, int y) => (x == this.length - 1 || y == this.length - 1 || x == 0 || y == 0)
+                    && this.helperMap[x, y] == this.step + 1;
+
+        private void SetFinish(int x, int y)
+        {
+            this.finishX = x;
+            this.finishY = y;
+        }
 
         private bool RestorePath()
         {
