@@ -124,8 +124,7 @@ namespace Maze
         {
             if (i != this.length - 1 && this.helperMap[i + 1, j] == (int)Way.Path)
             {
-                    this.helperMap[i + 1, j] = this.step + 1;
-                
+                    this.helperMap[i + 1, j] = this.step + 1;                
             }
 
             if (j != this.length - 1 && this.helperMap[i, j + 1] == (int)Way.Path)
