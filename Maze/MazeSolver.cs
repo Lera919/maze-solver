@@ -122,36 +122,25 @@ namespace Maze
 
         private void MakeWave(int i, int j)
         {
-            if (i != this.length - 1)
+            if (i != this.length - 1 && this.helperMap[i + 1, j] == (int)Way.Path)
             {
-                if (this.helperMap[i + 1, j] == (int)Way.Path)
-                {
                     this.helperMap[i + 1, j] = this.step + 1;
-                }
+                
             }
 
-            if (j != this.length - 1)
+            if (j != this.length - 1 && this.helperMap[i, j + 1] == (int)Way.Path)
             {
-                if (this.helperMap[i, j + 1] == (int)Way.Path)
-                {
-                    this.helperMap[i, j + 1] = this.step + 1;
-                }
+                this.helperMap[i, j + 1] = this.step + 1;
             }
 
-            if (i != 0)
+            if (i != 0 && this.helperMap[i - 1, j] == (int)Way.Path)
             {
-                if (this.helperMap[i - 1, j] == (int)Way.Path)
-                {
-                    this.helperMap[i - 1, j] = this.step + 1;
-                }
+                this.helperMap[i - 1, j] = this.step + 1;
             }
 
-            if (j != 0)
+            if (j != 0 && this.helperMap[i, j - 1] == (int)Way.Path)
             {
-                if (this.helperMap[i, j - 1] == (int)Way.Path)
-                {
-                    this.helperMap[i, j - 1] = this.step + 1;
-                }
+                this.helperMap[i, j - 1] = this.step + 1;
             }
         }
 
